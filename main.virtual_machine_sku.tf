@@ -27,7 +27,7 @@ locals {
   vm_map_location_conversion     = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for location in sku.locationInfo : location.location => location } } : {}                                             #convert the locationInfo to a map so we can work with the keys 
   vm_output_map = {
     "vm" = {
-      sku      = ((lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku : jsondecode(azurerm_storage_blob.cache[0].source_content).sku) : (lower(var.resource_type == "vm") ? local.cache_map["${lower(var.resource_type)}"].sku : "no_valid_skus_found"))
+      sku      = ((lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku : jsondecode(azurerm_storage_blob.cache[0].source_content).sku) : (lower(var.resource_type == "vm") ? local.cache_map[lower(var.resource_type)].sku : "no_valid_skus_found"))
       sku_list = (lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku_list : jsondecode(azurerm_storage_blob.cache[0].source_content).sku_list) : (lower(var.resource_type == "vm") ? local.vm_skus : toset([]))
     }
   }

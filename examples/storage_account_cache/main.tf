@@ -9,13 +9,9 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">= 3.115, < 5.0"
     }
-    modtm = {
-      source  = "azure/modtm"
-      version = "~> 0.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.4"
     }
   }
 }
@@ -52,9 +48,8 @@ data "http" "ip" {
 # This is a workaround for the limitation of the storage account firewall rules that require a /30 CIDR block
 # Do not do this in production, this is just for the sake of the example
 locals {
-  container_name = "cache-container"
-  ip_cidr        = "${join(".", concat(slice(local.ip_split, 0, 3), [tostring(((tonumber(local.ip_split[3])) - (tonumber(local.ip_split[3]) % 4)))]))}/30"
-  ip_split       = split(".", data.http.ip.response_body)
+  ip_cidr  = "${join(".", concat(slice(local.ip_split, 0, 3), [tostring(((tonumber(local.ip_split[3])) - (tonumber(local.ip_split[3]) % 4)))]))}/30"
+  ip_split = split(".", data.http.ip.response_body)
 }
 
 data "azurerm_client_config" "current" {}
@@ -109,8 +104,9 @@ module "this_storage_account" {
 module "vm_skus" {
   source = "../.."
 
-  location      = azurerm_resource_group.this.location
-  resource_type = "vm"
+  enable_telemetry = var.enable_telemetry
+  location         = azurerm_resource_group.this.location
+  resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true
     cpu_architecture_type          = "x64"

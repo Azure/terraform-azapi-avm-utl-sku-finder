@@ -1,17 +1,13 @@
 terraform {
   required_version = "~> 1.9"
   required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 2.0"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-    modtm = {
-      source  = "azure/modtm"
-      version = "~> 0.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
+      version = ">= 3.115, < 5.0"
     }
   }
 }
@@ -20,12 +16,12 @@ provider "azurerm" {
   features {}
 }
 
-
 module "vm_skus" {
   source = "../.."
 
-  location      = "canadacentral"
-  resource_type = "vm"
+  enable_telemetry = var.enable_telemetry
+  location         = "canadacentral"
+  resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true
     cpu_architecture_type          = "x64"

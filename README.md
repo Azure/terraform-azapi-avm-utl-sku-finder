@@ -18,9 +18,11 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.115, < 5.0)
 
+- <a name="requirement_local"></a> [local](#requirement\_local) (~> 2.5)
+
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
 ## Resources
 
@@ -168,11 +170,11 @@ The following outputs are exported:
 
 ### <a name="output_sku"></a> [sku](#output\_sku)
 
-Description: n/a
+Description: The randomly selected sku returned from the filtered list of skus.
 
 ### <a name="output_sku_list"></a> [sku\_list](#output\_sku\_list)
 
-Description: n/a
+Description: The list of skus returned from the filtered list of skus.
 
 ## Modules
 
