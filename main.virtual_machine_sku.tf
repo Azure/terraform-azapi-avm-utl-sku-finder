@@ -1,6 +1,7 @@
 #get the full sku list (azapi doesn't currently have a good way to filter the api call)
 data "azapi_resource_list" "vm" {
   count = lower(var.resource_type) == "vm" ? 1 : 0
+
   parent_id              = data.azurerm_subscription.current.id
   type                   = "Microsoft.Compute/skus?$filter=location%20eq%20%27${var.location}%27@2021-07-01"
   response_export_values = ["*"]
@@ -14,15 +15,22 @@ locals {
     lower(sku.resourceType) == "virtualmachines" && #sku is a virtual machine type
     length(try(sku.capabilities, [])) > 1           #avoid skus without a defined capabilities list
   ] : []
-
-  vm_find_duplicates =  try({ for sku in data.azapi_resource_list.vm[0].output.value : sku.name => sku... }, {}) #group the output to ensure duplicates can be identified
-  vm_duplicates      = ((lower(var.resource_type) == "vm") ? [ for key, value in local.vm_find_duplicates : key if length(value) > 1]   : []  )         #any group with more than 1 value is a duplicate)
-
+  vm_cache_map = {
+    sku      = tolist(local.vm_skus)[random_integer.vm_deploy_sku.result]
+    sku_list = tolist(local.vm_skus)
+  }
+  vm_duplicates                  = ((lower(var.resource_type) == "vm") ? [for key, value in local.vm_find_duplicates : key if length(value) > 1] : []) #any group with more than 1 value is a duplicate)
+  vm_find_duplicates             = try({ for sku in data.azapi_resource_list.vm[0].output.value : sku.name => sku... }, {})                            #group the output to ensure duplicates can be identified
+  vm_location_capabilities       = lower(var.resource_type) == "vm" ? { for key, value in local.vm_map_location_conversion : key => try({ for capability in value[var.location].zoneDetails[0].capabilities : capability.name => capability }, {}) } : {}
+  vm_map_capabilities_conversion = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for capability in sku.capabilities : capability.name => capability } } : {}                                           #convert the capabilities a map so we can work with the keys
   vm_map_conversion              = lower(var.resource_type) == "vm" ? { for sku in data.azapi_resource_list.vm[0].output.value : sku.name => sku if(!contains(local.vm_duplicates, sku.name) && contains(local.no_restriction, sku.name)) } : {} #convert the output to a map so we can work with the keys
-  vm_map_capabilities_conversion = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for capability in sku.capabilities : capability.name => capability } } : {}                                          #convert the capabilities a map so we can work with the keys
-  vm_map_location_conversion     = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for location in sku.locationInfo : location.location => location } } : {}                                           #convert the locationInfo to a map so we can work with the keys 
-  vm_location_capabilities       = lower(var.resource_type) == "vm" ?{ for key, value in local.vm_map_location_conversion : key => try({ for capability in value[var.location].zoneDetails[0].capabilities : capability.name => capability }, {}) } : {}
-
+  vm_map_location_conversion     = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for location in sku.locationInfo : location.location => location } } : {}                                             #convert the locationInfo to a map so we can work with the keys 
+  vm_output_map = {
+    "vm" = {
+      sku      = ((lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku : jsondecode(azurerm_storage_blob.cache[0].source_content).sku) : (lower(var.resource_type == "vm") ? local.cache_map["${lower(var.resource_type)}"].sku : "no_valid_skus_found"))
+      sku_list = (lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku_list : jsondecode(azurerm_storage_blob.cache[0].source_content).sku_list) : (lower(var.resource_type == "vm") ? local.vm_skus : toset([]))
+    }
+  }
   #Create separate lists of skus based on the conditions input for each capability 
   vm_per_element_valid_skus = lower(var.resource_type) == "vm" ? {
 
@@ -160,7 +168,7 @@ locals {
     ],
 
   } : {}
-
+  vm_skus = length(local.vm_valid_skus) > 0 ? local.vm_valid_skus : ["no_valid_skus_found"]
   #get the intersection of all the capability lists as the list of skus matching all supplied conditions.
   vm_valid_skus = lower(var.resource_type) == "vm" ? setintersection(
     local.vm_per_element_valid_skus["CpuArchitectureType"],
@@ -183,26 +191,10 @@ locals {
     local.vm_per_element_valid_skus["zones"],
     local.vm_per_element_valid_skus["UltraSSDAvailable"],
   ) : toset([])
-
-  vm_skus = length(local.vm_valid_skus) > 0 ? local.vm_valid_skus : ["no_valid_skus_found"] 
-
-
-  vm_cache_map = {
-    sku = tolist(local.vm_skus)[random_integer.vm_deploy_sku.result]
-    sku_list = tolist(local.vm_skus)
-  }
-
-  vm_output_map = { 
-    "vm" = {
-      sku = ((lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku :  jsondecode(azurerm_storage_blob.cache[0].source_content).sku ) : (lower(var.resource_type == "vm") ? local.cache_map["${lower(var.resource_type)}"].sku : "no_valid_skus_found")) 
-      sku_list = (lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku_list :  jsondecode(azurerm_storage_blob.cache[0].source_content).sku_list ) : (lower(var.resource_type == "vm") ? local.vm_skus : toset([]))
-    } 
-  }
-
 }
 
 #TODO: Can we randomly select using list value instead of a list index? (future improvement?)
 resource "random_integer" "vm_deploy_sku" {
-  max = length(local.vm_skus) - 1 
+  max = length(local.vm_skus) - 1
   min = 0
 }

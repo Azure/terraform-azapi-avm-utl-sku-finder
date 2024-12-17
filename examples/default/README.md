@@ -1,15 +1,15 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This example demonstrates using the vm resource type with a few common filters to output a set of skus and sku\_list.
 
 ```hcl
 terraform {
-  required_version = "~> 1.5"
+  required_version = "~> 1.9"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.74"
+      version = "~> 4.0"
     }
     modtm = {
       source  = "azure/modtm"
@@ -27,45 +27,27 @@ provider "azurerm" {
 }
 
 
-## Section to provide a random Azure region for the resource group
-# This allows us to randomize the region for the resource group.
-module "regions" {
-  source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.1"
+module "vm_skus" {
+  source = "../.."
+
+  location      = "canadacentral"
+  resource_type = "vm"
+  vm_filters = {
+    accelerated_networking_enabled = true
+    cpu_architecture_type          = "x64"
+    min_vcpus                      = 2
+    max_vcpus                      = 2
+    encryption_at_host_supported   = true
+    min_network_interfaces         = 2
+  }
 }
 
-# This allows us to randomize the region for the resource group.
-resource "random_integer" "region_index" {
-  max = length(module.regions.regions) - 1
-  min = 0
-}
-## End of section to provide a random Azure region for the resource group
-
-# This ensures we have unique CAF compliant names for our resources.
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+output "sku" {
+  value = module.vm_skus.sku
 }
 
-# This is required for resource modules
-resource "azurerm_resource_group" "this" {
-  location = module.regions.regions[random_integer.region_index.result].name
-  name     = module.naming.resource_group.name_unique
-}
-
-# This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
-module "test" {
-  source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  location            = azurerm_resource_group.this.location
-  name                = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-
-  enable_telemetry = var.enable_telemetry # see variables.tf
+output "sku_list" {
+  value = module.vm_skus.sku_list
 }
 ```
 
@@ -74,9 +56,9 @@ module "test" {
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -84,10 +66,7 @@ The following requirements are needed by this module:
 
 ## Resources
 
-The following resources are used by this module:
-
-- [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
+No resources.
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -110,27 +89,23 @@ Default: `true`
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_sku"></a> [sku](#output\_sku)
+
+Description: n/a
+
+### <a name="output_sku_list"></a> [sku\_list](#output\_sku\_list)
+
+Description: n/a
 
 ## Modules
 
 The following Modules are called:
 
-### <a name="module_naming"></a> [naming](#module\_naming)
+### <a name="module_vm_skus"></a> [vm\_skus](#module\_vm\_skus)
 
-Source: Azure/naming/azurerm
-
-Version: ~> 0.3
-
-### <a name="module_regions"></a> [regions](#module\_regions)
-
-Source: Azure/avm-utl-regions/azurerm
-
-Version: ~> 0.1
-
-### <a name="module_test"></a> [test](#module\_test)
-
-Source: ../../
+Source: ../..
 
 Version:
 

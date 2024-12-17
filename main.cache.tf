@@ -32,7 +32,6 @@ resource "azurerm_storage_blob" "cache" {
   type                   = "Block"
   source_content         = jsonencode(local.cache_map["${var.resource_type}"])
 
-
   lifecycle {
     ignore_changes = [source_content] #this is a cache file, we don't want to update it when the content changes
   }

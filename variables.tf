@@ -4,6 +4,32 @@ variable "location" {
   nullable    = false
 }
 
+variable "cache_results" {
+  type        = bool
+  default     = false
+  description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
+}
+
+#TODO: create a full description of the cache_storage_details object
+variable "cache_storage_details" {
+  type = object({
+    storage_account_resource_group_name = string
+    storage_account_name                = string
+    storage_account_blob_container_name = string
+    storage_account_blob_prefix         = string
+  })
+  default     = null
+  description = <<DESCRIPTION
+This object is used to define the storage account and container where the cache file will be stored.
+
+- `storage_account_resource_group_name` - The name of the resource group where the storage account is located.
+- `storage_account_name` - The name of the storage account where the cache file will be stored.
+- `storage_account_blob_container_name` - The name of the container where the cache file will be stored.
+- `storage_account_blob_prefix` - The prefix to be used for the cache file blob.
+
+DESCRIPTION
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -15,10 +41,17 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "local_cache_prefix" {
+  type        = string
+  default     = "local"
+  description = "If caching locally, this prefix will be used to help identify the cache file in the event that the module is called multiple times."
+}
+
 variable "resource_type" {
-  type = string
+  type        = string
+  default     = "vm"
   description = "The resource type you want a sku for.  Currently only supports VM's, but additional resource types will be added over time."
-  default = "vm"
+
   validation {
     condition     = can(regex("vm", lower(var.resource_type)))
     error_message = "Valid resource types are vm."
@@ -49,7 +82,7 @@ variable "vm_filters" {
     location_zone                           = optional(number)
     location_ultrassd_support               = optional(bool)
   })
-
+  default     = {}
   description = <<DESCRIPTION
 This object is used to filter the available skus based on the criteria you provide.
 
@@ -75,38 +108,4 @@ This object is used to filter the available skus based on the criteria you provi
 - `location_ultrassd_support` - If true, only skus that support ultra ssd will be returned.
 
 DESCRIPTION
-  default = {}
 }
-
-variable "cache_results" {
-  type = bool
-  default = false
-  description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
-}
-#TODO: create a full description of the cache_storage_details object
-variable "cache_storage_details" {
-    type = object({
-      storage_account_resource_group_name = string
-      storage_account_name = string
-      storage_account_blob_container_name = string
-      storage_account_blob_prefix = string
-    })
-    description = <<DESCRIPTION
-This object is used to define the storage account and container where the cache file will be stored.
-
-- `storage_account_resource_group_name` - The name of the resource group where the storage account is located.
-- `storage_account_name` - The name of the storage account where the cache file will be stored.
-- `storage_account_blob_container_name` - The name of the container where the cache file will be stored.
-- `storage_account_blob_prefix` - The prefix to be used for the cache file blob.
-
-DESCRIPTION
-    default = null
-}
-
-variable "local_cache_prefix" {
-  type = string
-  default = "local"
-  description = "If caching locally, this prefix will be used to help identify the cache file in the event that the module is called multiple times."  
-}
-
-

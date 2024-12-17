@@ -1,6 +1,10 @@
 terraform {
   required_version = "~> 1.9"
   required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 2.0"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = ">= 3.115, < 5.0"
@@ -12,10 +16,6 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "~> 3.5"
-    }
-    azapi = {
-      source  = "azure/azapi"
-      version = "~> 2.0"
     }
   }
 }
@@ -52,9 +52,9 @@ data "http" "ip" {
 # This is a workaround for the limitation of the storage account firewall rules that require a /30 CIDR block
 # Do not do this in production, this is just for the sake of the example
 locals {
-  ip_split = split(".", data.http.ip.response_body)
-  ip_cidr  = "${join(".", concat(slice(local.ip_split, 0, 3), [tostring(((tonumber(local.ip_split[3])) -  (tonumber(local.ip_split[3]) % 4)))]) )}/30"
   container_name = "cache-container"
+  ip_cidr        = "${join(".", concat(slice(local.ip_split, 0, 3), [tostring(((tonumber(local.ip_split[3])) - (tonumber(local.ip_split[3]) % 4)))]))}/30"
+  ip_split       = split(".", data.http.ip.response_body)
 }
 
 data "azurerm_client_config" "current" {}
@@ -64,15 +64,15 @@ module "this_storage_account" {
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
   version = "0.2.9"
 
-  account_replication_type   = "ZRS"
-  account_tier               = "Standard"
-  account_kind               = "StorageV2"
-  location                   = azurerm_resource_group.this.location
-  name                       = module.naming.storage_account.name_unique
-  https_traffic_only_enabled = true
-  resource_group_name        = azurerm_resource_group.this.name
-  min_tls_version            = "TLS1_2"
-  shared_access_key_enabled  = true
+  account_replication_type      = "ZRS"
+  account_tier                  = "Standard"
+  account_kind                  = "StorageV2"
+  location                      = azurerm_resource_group.this.location
+  name                          = module.naming.storage_account.name_unique
+  https_traffic_only_enabled    = true
+  resource_group_name           = azurerm_resource_group.this.name
+  min_tls_version               = "TLS1_2"
+  shared_access_key_enabled     = true
   public_network_access_enabled = true
 
   blob_properties = {
@@ -93,16 +93,16 @@ module "this_storage_account" {
   }
 
   network_rules = {
-    bypass                     = ["AzureServices"]
-    default_action             = "Deny"
-    ip_rules                   = [local.ip_cidr]
+    bypass         = ["AzureServices"]
+    default_action = "Deny"
+    ip_rules       = [local.ip_cidr]
   }
 
   containers = {
     sku_cache_container = {
       name = "cache-container"
-    } 
-  }  
+    }
+  }
 }
 
 
@@ -114,18 +114,18 @@ module "vm_skus" {
   vm_filters = {
     accelerated_networking_enabled = true
     cpu_architecture_type          = "x64"
-    min_vcpus = 2
-    max_vcpus = 4
-    encryption_at_host_supported = true
-    min_network_interfaces = 2
+    min_vcpus                      = 2
+    max_vcpus                      = 4
+    encryption_at_host_supported   = true
+    min_network_interfaces         = 2
   }
 
   cache_results = true
   cache_storage_details = {
     storage_account_resource_group_name = azurerm_resource_group.this.name
-    storage_account_name = module.this_storage_account.name
-    storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id)))-1]
-    storage_account_blob_prefix = "remote-stg"
+    storage_account_name                = module.this_storage_account.name
+    storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id))) - 1]
+    storage_account_blob_prefix         = "remote-stg"
   }
 }
 
