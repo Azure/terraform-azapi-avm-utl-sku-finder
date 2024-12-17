@@ -1,23 +1,8 @@
 variable "location" {
   type        = string
-  description = "Azure region where the resource should be deployed."
+  description = "Azure region where the target skus will be deployed. This is required as the initial api query is filtered by location for speed."
   nullable    = false
 }
-
-#TODO: verify whether this is required for utility modules
-/*
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
-}
-*/
 
 variable "enable_telemetry" {
   type        = bool
@@ -30,18 +15,6 @@ DESCRIPTION
   nullable    = false
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "tags" {
-  type        = map(string)
-  default     = null
-  description = "(Optional) Tags of the resource."
-}
-
-variable "location" {
-  type        = string
-  description = "The selected region for deployment. This is required as the initial query is filtered by location for speed."
-}
-
 variable "resource_type" {
   type = string
   description = "The resource type you want a sku for.  Currently only supports VM's, but additional resource types will be added over time."
@@ -52,6 +25,7 @@ variable "resource_type" {
   }
 }
 
+#TODO: create a full description of the vm_filters object
 variable "vm_filters" {
   type = object({
     accelerated_networking_enabled          = optional(bool)
@@ -76,7 +50,7 @@ variable "vm_filters" {
     location_ultrassd_support               = optional(bool)
   })
 
-
+  description = "values to filter the sku list by.  "
   default = {}
 }
 
@@ -85,7 +59,7 @@ variable "cache_results" {
   default = false
   description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
 }
-
+#TODO: create a full description of the cache_storage_details object
 variable "cache_storage_details" {
     type = object({
       storage_account_resource_group_name = string
@@ -97,6 +71,10 @@ variable "cache_storage_details" {
     default = null
 }
 
-
+variable "local_cache_prefix" {
+  type = string
+  default = "local"
+  description = "If caching locally, this prefix will be used to help identify the cache file in the event that the module is called multiple times."  
+}
 
 

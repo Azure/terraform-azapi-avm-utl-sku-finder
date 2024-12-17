@@ -34,6 +34,10 @@ module "vm_skus" {
     encryption_at_host_supported = true
     min_network_interfaces = 2
   }
+
+  cache_results = true
+  local_cache_prefix = "example"
+
 }
 
 output "sku" {
