@@ -50,7 +50,31 @@ variable "vm_filters" {
     location_ultrassd_support               = optional(bool)
   })
 
-  description = "values to filter the sku list by.  "
+  description = <<DESCRIPTION
+This object is used to filter the available skus based on the criteria you provide.
+
+- `accelerated_networking_enabled` - If true, only skus that support accelerated networking will be returned.
+- `cpu_architecture_type` - The cpu architecture type.  Valid values are `x64` and `Arm64`.
+- `encryption_at_host_supported` - If true, only skus that support encryption at host will be returned.
+- `ephemeral_os_disk_supported` - If true, only skus that support ephemeral os disks will be returned.
+- `min_gpus` - The minimum number of gpus the sku must support.
+- `max_gpus` - The maximum number of gpus the sku must support. 
+- `hibernation_supported` - If true, only skus that support hibernation will be returned.
+- `hyper_v_generations` - The hyper-v generations the sku must support.  Valid values are `V1`, `V2`, and `V1,V2`.
+- `low_priority_capable` - If true, only skus that support low priority will be returned.
+- `memory_preserving_maintenance_supported` - If true, only skus that support memory preserving maintenance will be returned.
+- `min_network_interfaces` - The minimum number of network interfaces the sku must support.
+- `min_data_disk_count` - The minimum number of data disks the sku must support.
+- `min_vcpus` - The minimum number of vcpus the sku must support.
+- `max_vcpus` - The maximum number of vcpus the sku must support.
+- `min_memory_gb` - The minimum amount of memory in GB the sku must support.
+- `max_memory_gb` - The maximum amount of memory in GB the sku must support.
+- `premium_io_supported` - If true, only skus that support premium io will be returned.
+- `rdma_enabled` - If true, only skus that support rdma will be returned.
+- `location_zone` - Will return skus that are supported in the specified zone in your subscription.
+- `location_ultrassd_support` - If true, only skus that support ultra ssd will be returned.
+
+DESCRIPTION
   default = {}
 }
 
@@ -67,7 +91,15 @@ variable "cache_storage_details" {
       storage_account_blob_container_name = string
       storage_account_blob_prefix = string
     })
-    description = "If caching to a storage account, these values will be used to write the cache file."
+    description = <<DESCRIPTION
+This object is used to define the storage account and container where the cache file will be stored.
+
+- `storage_account_resource_group_name` - The name of the resource group where the storage account is located.
+- `storage_account_name` - The name of the storage account where the cache file will be stored.
+- `storage_account_blob_container_name` - The name of the container where the cache file will be stored.
+- `storage_account_blob_prefix` - The prefix to be used for the cache file blob.
+
+DESCRIPTION
     default = null
 }
 
