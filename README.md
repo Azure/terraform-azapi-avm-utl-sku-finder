@@ -168,6 +168,10 @@ Default: `{}`
 
 The following outputs are exported:
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource id of the resource. This is actually a repeat of the sku output to make the linter happy.
+
 ### <a name="output_sku"></a> [sku](#output\_sku)
 
 Description: The randomly selected sku returned from the filtered list of skus.
