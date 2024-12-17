@@ -3,7 +3,7 @@ data "azapi_resource_list" "vm" {
   count = lower(var.resource_type) == "vm" ? 1 : 0
 
   parent_id              = data.azurerm_subscription.current.id
-  type                   = "Microsoft.Compute/skus?$filter=location%20eq%20%27${var.location}%27@2021-07-01"
+  type                   = "Microsoft.Compute/skus?$filter=location%20eq%20%27${var.location}%27@2024-07-01"
   response_export_values = ["*"]
 }
 
