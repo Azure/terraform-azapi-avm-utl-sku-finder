@@ -1,6 +1,14 @@
-output "private_endpoints" {
-  description = <<DESCRIPTION
-  A map of the private endpoints created.
-  DESCRIPTION
-  value       = var.private_endpoints_manage_dns_zone_group ? azurerm_private_endpoint.this_managed_dns_zone_groups : azurerm_private_endpoint.this_unmanaged_dns_zone_groups
+output "resource_id" {
+  description = "The resource id of the resource. This is actually a repeat of the sku output to make the linter happy."
+  value       = local.output_map[var.resource_type].sku
+}
+
+output "sku" {
+  description = "The randomly selected sku returned from the filtered list of skus."
+  value       = local.output_map[var.resource_type].sku
+}
+
+output "sku_list" {
+  description = "The list of skus returned from the filtered list of skus."
+  value       = local.output_map[var.resource_type].sku_list
 }

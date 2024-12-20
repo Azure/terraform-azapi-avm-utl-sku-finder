@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
-# Default example
+# Local Cache file example
 
-This example demonstrates using the vm resource type with a few common filters to output a set of skus and sku\_list.
+This example demonstrates using the vm resource type with a few common filters to output a set of skus and sku\_list. It writes to a local cache file to demonstrate the use of the cache to avoid sku changes when the valid sku list changes.
 
 ```hcl
 terraform {
@@ -32,6 +32,10 @@ module "vm_skus" {
     encryption_at_host_supported   = true
     min_network_interfaces         = 2
   }
+
+  cache_results      = true
+  local_cache_prefix = "example"
+
 }
 
 output "sku" {
