@@ -3,7 +3,7 @@ data "azapi_resource_list" "vm" {
   count = lower(var.resource_type) == "vm" ? 1 : 0
 
   parent_id              = data.azurerm_subscription.current.id
-  type                   = "Microsoft.Compute/skus?$filter=location%20eq%20%27${var.location}%27@2024-07-01"
+  type                   = "Microsoft.Compute/skus?$filter=location%20eq%20%27${lower(var.location)}%27@2024-07-01"
   response_export_values = ["*"]
 }
 
@@ -21,10 +21,10 @@ locals {
   }
   vm_duplicates                  = ((lower(var.resource_type) == "vm") ? [for key, value in local.vm_find_duplicates : key if length(value) > 1] : []) #any group with more than 1 value is a duplicate)
   vm_find_duplicates             = try({ for sku in data.azapi_resource_list.vm[0].output.value : sku.name => sku... }, {})                            #group the output to ensure duplicates can be identified
-  vm_location_capabilities       = lower(var.resource_type) == "vm" ? { for key, value in local.vm_map_location_conversion : key => try({ for capability in value[var.location].zoneDetails[0].capabilities : capability.name => capability }, {}) } : {}
+  vm_location_capabilities       = lower(var.resource_type) == "vm" ? { for key, value in local.vm_map_location_conversion : key => try({ for capability in value[lower(var.location)].zoneDetails[0].capabilities : capability.name => capability }, {}) } : {}
   vm_map_capabilities_conversion = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for capability in sku.capabilities : capability.name => capability } } : {}                                           #convert the capabilities a map so we can work with the keys
   vm_map_conversion              = lower(var.resource_type) == "vm" ? { for sku in data.azapi_resource_list.vm[0].output.value : sku.name => sku if(!contains(local.vm_duplicates, sku.name) && contains(local.no_restriction, sku.name)) } : {} #convert the output to a map so we can work with the keys
-  vm_map_location_conversion     = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for location in sku.locationInfo : location.location => location } } : {}                                             #convert the locationInfo to a map so we can work with the keys 
+  vm_map_location_conversion     = lower(var.resource_type) == "vm" ? { for sku in local.vm_map_conversion : sku.name => { for location in sku.locationInfo : lower(location.location) => location } } : {}                                      #convert the locationInfo to a map so we can work with the keys 
   vm_output_map = {
     "vm" = {
       sku      = ((lower(var.resource_type) == "vm" && var.cache_results) ? (var.cache_storage_details == null ? jsondecode(local_file.local_sku_cache[0].content).sku : jsondecode(azurerm_storage_blob.cache[0].source_content).sku) : (lower(var.resource_type == "vm") ? local.cache_map[lower(var.resource_type)].sku : "no_valid_skus_found"))
@@ -155,7 +155,7 @@ locals {
     #if a zone is supplied provide sku's that include that zone in the location info.
     zones = [for sku, value in local.vm_map_location_conversion : sku if
       (
-        (try(contains(toset(value[var.location].zones), tostring(var.vm_filters.location_zone)), false)) ||
+        (try(contains(toset(value[lower(var.location)].zones), tostring(var.vm_filters.location_zone)), false)) ||
         var.vm_filters.location_zone == null
       )
     ],
