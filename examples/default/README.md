@@ -31,6 +31,7 @@ module "vm_skus" {
     max_vcpus                      = 2
     encryption_at_host_supported   = true
     min_network_interfaces         = 2
+    location_zone                  = 1
   }
 }
 
