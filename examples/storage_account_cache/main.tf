@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.4"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }
 
@@ -18,6 +22,18 @@ provider "azurerm" {
 
 locals {
   location = "canadacentral"
+}
+
+module "regions" {
+  source  = "Azure/avm-utl-regions/azurerm"
+  version = "0.3.0"
+
+  availability_zones_filter = true
+}
+
+resource "random_integer" "zone_index" {
+  max = length(module.regions.regions_by_name[local.location].zones)
+  min = 1
 }
 
 module "naming" {
@@ -110,6 +126,7 @@ module "vm_skus" {
     max_vcpus                      = 4
     encryption_at_host_supported   = true
     min_network_interfaces         = 2
+    location_zone                  = random_integer.zone_index.result
   }
 
   cache_results = true
@@ -119,6 +136,8 @@ module "vm_skus" {
     storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id))) - 1]
     storage_account_blob_prefix         = "remote-stg"
   }
+
+  depends_on = [random_integer.zone_index]
 }
 
 output "sku" {
