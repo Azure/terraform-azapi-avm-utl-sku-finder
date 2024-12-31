@@ -35,137 +35,137 @@ locals {
   vm_per_element_valid_skus = lower(var.resource_type) == "vm" ? {
 
     #required selection (defaults to x64).  Matching only, no null comparisons.
-    CpuArchitectureType = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    CpuArchitectureType = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["CpuArchitectureType"].value) == lower(tostring(var.vm_filters.cpu_architecture_type)), false))
       )
-    ]
+    ], []),
 
     #null = all skus 
     #value = matching skus only
-    AcceleratedNetworkingEnabled = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    AcceleratedNetworkingEnabled = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["AcceleratedNetworkingEnabled"].value) == lower(tostring(var.vm_filters.accelerated_networking_enabled)), false)) ||
         var.vm_filters.accelerated_networking_enabled == null
       )
-    ],
-    EncryptionAtHostSupported = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    EncryptionAtHostSupported = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["EncryptionAtHostSupported"].value) == lower(tostring(var.vm_filters.encryption_at_host_supported)), false)) ||
         var.vm_filters.encryption_at_host_supported == null
       )
-    ],
-    EphemeralOSDiskSupported = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    EphemeralOSDiskSupported = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["EphemeralOSDiskSupported"].value) == lower(tostring(var.vm_filters.ephemeral_os_disk_supported)), false)) ||
         var.vm_filters.ephemeral_os_disk_supported == null
       )
-    ],
-    HibernationSupported = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    HibernationSupported = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["HibernationSupported"].value) == lower(tostring(var.vm_filters.hibernation_supported)), false)) ||
         var.vm_filters.hibernation_supported == null
       )
-    ],
-    LowPriorityCapable = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    LowPriorityCapable = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["LowPriorityCapable"].value) == lower(tostring(var.vm_filters.low_priority_capable)), false)) ||
         var.vm_filters.low_priority_capable == null
       )
-    ],
-    MemoryPreservingMaintenanceSupported = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    MemoryPreservingMaintenanceSupported = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["MemoryPreservingMaintenanceSupported"].value) == lower(tostring(var.vm_filters.memory_preserving_maintenance_supported)), false)) ||
         var.vm_filters.memory_preserving_maintenance_supported == null
       )
-    ],
-    PremiumIO = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    PremiumIO = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["PremiumIO"].value) == lower(tostring(var.vm_filters.premium_io_supported)), false)) ||
         var.vm_filters.premium_io_supported == null
       )
-    ],
-    RdmaEnabled = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    RdmaEnabled = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(lower(value["RdmaEnabled"].value) == lower(tostring(var.vm_filters.rdma_enabled)), false)) ||
         var.vm_filters.rdma_enabled == null
       )
-    ],
+    ], []),
 
     #null for min and max include everything
     #min defined and capabilities value defined for sku, null max include skus with greater than min
     #max defined,and capabilities valued defined for sku, null min = include skus with less than max
     #min and max defined = include sku's equal to or between the min and max
-    vCPUs_min = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    vCPUs_min = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["vCPUs"].value) >= var.vm_filters.min_vcpus, false)) ||
         var.vm_filters.min_vcpus == null
       )
-    ],
-    vCPUs_max = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    vCPUs_max = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["vCPUs"].value) <= var.vm_filters.max_vcpus, false)) ||
         var.vm_filters.max_vcpus == null
       )
-    ],
+    ], []),
 
-    MemoryGB_min = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    MemoryGB_min = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["MemoryGB"].value) >= var.vm_filters.min_memory_gb, false)) ||
         var.vm_filters.min_memory_gb == null
       )
-    ],
-    MemoryGB_max = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    MemoryGB_max = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["MemoryGB"].value) <= var.vm_filters.max_memory_gb, false)) ||
         var.vm_filters.max_memory_gb == null
       )
-    ],
+    ], []),
 
-    GPUs_min = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    GPUs_min = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["GPUs"].value) >= var.vm_filters.min_gpus, false)) ||
         var.vm_filters.min_gpus == null
       )
-    ],
-    GPUs_max = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    ], []),
+    GPUs_max = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["GPUs"].value) <= var.vm_filters.max_gpus, false)) ||
         var.vm_filters.max_gpus == null
       )
-    ],
+    ], []),
 
     #minimum value supplied.  Outcome is sku's supporting at least that many NICs.  Unlikely that someone would want sku's supporting less than some maximum nic count.  Leaving that condition unset for now.
-    MaxNetworkInterfaces_min = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    MaxNetworkInterfaces_min = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["MaxNetworkInterfaces"].value) >= var.vm_filters.min_network_interfaces, false)) ||
         var.vm_filters.min_network_interfaces == null
       )
-    ],
+    ], []),
 
     #minimum value supplied.  Outcome is sku's supporting at least that many Data disks.  Unlikely that someone would want sku's supporting less than some maximum data disk count.  Leaving that condition unset for now.
-    MaxDataDiskCount_min = [for sku, value in local.vm_map_capabilities_conversion : sku if
+    MaxDataDiskCount_min = try([for sku, value in local.vm_map_capabilities_conversion : sku if
       (
         (try(tonumber(value["MaxDataDiskCount"].value) >= var.vm_filters.min_data_disk_count, false)) ||
         var.vm_filters.min_data_disk_count == null
       )
-    ],
+    ], []),
 
     #use the location info to ensure zone support and ultrassd support
     #if a zone is supplied provide sku's that include that zone in the location info.
-    zones = [for sku, value in local.vm_map_location_conversion : sku if
+    zones = try([for sku, value in local.vm_map_location_conversion : sku if
       (
         (try(contains(toset(value[lower(var.location)].zones), tostring(var.vm_filters.location_zone)), false)) ||
         var.vm_filters.location_zone == null
       )
-    ],
+    ], []),
 
-    UltraSSDAvailable = [for sku, value in local.vm_location_capabilities : sku if
+    UltraSSDAvailable = try([for sku, value in local.vm_location_capabilities : sku if
       (
         (try(lower(value["UltraSSDAvailable"].value) == lower(tostring(var.vm_filters.location_ultrassd_support)), false)) ||
         var.vm_filters.location_ultrassd_support == null
       )
-    ],
+    ], []),
 
   } : {}
   vm_skus = length(local.vm_valid_skus) > 0 ? local.vm_valid_skus : ["no_valid_skus_found"]

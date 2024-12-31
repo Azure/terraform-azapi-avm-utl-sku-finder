@@ -12,6 +12,22 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  deployment_region = "canadacentral"
+}
+
+module "regions" {
+  source  = "Azure/avm-utl-regions/azurerm"
+  version = "0.3.0"
+
+  availability_zones_filter = true
+}
+
+resource "random_integer" "zone_index" {
+  max = length(module.regions.regions_by_name[local.deployment_region].zones)
+  min = 1
+}
+
 module "vm_skus" {
   source = "../.."
 
@@ -25,8 +41,10 @@ module "vm_skus" {
     max_vcpus                      = 2
     encryption_at_host_supported   = true
     min_network_interfaces         = 2
-    location_zone                  = 1
+    location_zone                  = random_integer.zone_index.result
   }
+
+  depends_on = [random_integer.zone_index]
 }
 
 output "sku" {
