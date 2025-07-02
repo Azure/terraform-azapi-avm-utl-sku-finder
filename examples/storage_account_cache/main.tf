@@ -1,5 +1,6 @@
 terraform {
   required_version = "~> 1.9"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -67,25 +68,31 @@ locals {
 data "azurerm_client_config" "current" {}
 
 module "this_storage_account" {
-
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
   version = "0.2.9"
 
-  account_replication_type      = "ZRS"
-  account_tier                  = "Standard"
-  account_kind                  = "StorageV2"
-  location                      = azurerm_resource_group.this.location
-  name                          = module.naming.storage_account.name_unique
-  https_traffic_only_enabled    = true
-  resource_group_name           = azurerm_resource_group.this.name
-  min_tls_version               = "TLS1_2"
-  shared_access_key_enabled     = true
-  public_network_access_enabled = true
-
+  location                 = azurerm_resource_group.this.location
+  name                     = module.naming.storage_account.name_unique
+  resource_group_name      = azurerm_resource_group.this.name
+  account_kind             = "StorageV2"
+  account_replication_type = "ZRS"
+  account_tier             = "Standard"
   blob_properties = {
     versioning_enabled = true
   }
-
+  containers = {
+    sku_cache_container = {
+      name = "cache-container"
+    }
+  }
+  https_traffic_only_enabled = true
+  min_tls_version            = "TLS1_2"
+  network_rules = {
+    bypass         = ["AzureServices"]
+    default_action = "Deny"
+    ip_rules       = [local.ip_cidr]
+  }
+  public_network_access_enabled = true
   role_assignments = {
     role_assignment_1 = {
       role_definition_id_or_name       = "Storage Blob Data Owner"
@@ -98,26 +105,22 @@ module "this_storage_account" {
       skip_service_principal_aad_check = false
     },
   }
-
-  network_rules = {
-    bypass         = ["AzureServices"]
-    default_action = "Deny"
-    ip_rules       = [local.ip_cidr]
-  }
-
-  containers = {
-    sku_cache_container = {
-      name = "cache-container"
-    }
-  }
+  shared_access_key_enabled = true
 }
 
 
 module "vm_skus" {
   source = "../.."
 
+  location      = azurerm_resource_group.this.location
+  cache_results = true
+  cache_storage_details = {
+    storage_account_resource_group_name = azurerm_resource_group.this.name
+    storage_account_name                = module.this_storage_account.name
+    storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id))) - 1]
+    storage_account_blob_prefix         = "remote-stg"
+  }
   enable_telemetry = var.enable_telemetry
-  location         = azurerm_resource_group.this.location
   resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true
@@ -129,21 +132,7 @@ module "vm_skus" {
     location_zone                  = random_integer.zone_index.result
   }
 
-  cache_results = true
-  cache_storage_details = {
-    storage_account_resource_group_name = azurerm_resource_group.this.name
-    storage_account_name                = module.this_storage_account.name
-    storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id))) - 1]
-    storage_account_blob_prefix         = "remote-stg"
-  }
-
   depends_on = [random_integer.zone_index]
 }
 
-output "sku" {
-  value = module.vm_skus.sku
-}
 
-output "sku_list" {
-  value = module.vm_skus.sku_list
-}
