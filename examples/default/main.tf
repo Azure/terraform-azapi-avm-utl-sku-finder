@@ -1,5 +1,6 @@
 terraform {
   required_version = "~> 1.9"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -35,8 +36,8 @@ resource "random_integer" "zone_index" {
 module "vm_skus" {
   source = "../.."
 
-  enable_telemetry = var.enable_telemetry
   location         = "canadacentral"
+  enable_telemetry = var.enable_telemetry
   resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true
@@ -51,10 +52,4 @@ module "vm_skus" {
   depends_on = [random_integer.zone_index]
 }
 
-output "sku" {
-  value = module.vm_skus.sku
-}
 
-output "sku_list" {
-  value = module.vm_skus.sku_list
-}
