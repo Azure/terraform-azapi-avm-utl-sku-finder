@@ -69,7 +69,7 @@ data "azurerm_client_config" "current" {}
 
 module "this_storage_account" {
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
-  version = "0.2.9"
+  version = "0.7.2"
 
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
