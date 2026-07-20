@@ -27,7 +27,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.12.0"
 
   availability_zones_filter = true
 }
@@ -39,7 +39,7 @@ resource "random_integer" "zone_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.0"
+  version = "0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -69,7 +69,7 @@ data "azurerm_client_config" "current" {}
 
 module "this_storage_account" {
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
-  version = "0.2.9"
+  version = "0.7.3"
 
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
