@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.115, < 5.0"
+      version = ">= 3.115, < 5.1"
     }
     random = {
       source  = "hashicorp/random"
@@ -23,7 +23,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.12.0"
 
   availability_zones_filter = true
 }
