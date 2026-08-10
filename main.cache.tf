@@ -27,14 +27,12 @@ resource "azurerm_storage_blob" "cache" {
   count = var.cache_results ? (var.cache_storage_details == null ? 0 : 1) : 0
 
   name                   = "${var.resource_type}-${var.cache_storage_details.storage_account_blob_prefix}-${random_string.name_suffix.result}.cache"
-  storage_account_name   = var.cache_storage_details.storage_account_name
-  storage_container_name = var.cache_storage_details.storage_account_blob_container_name
   type                   = "Block"
   source_content         = jsonencode(local.cache_map[var.resource_type])
+  storage_account_name   = var.cache_storage_details.storage_account_name
+  storage_container_name = var.cache_storage_details.storage_account_blob_container_name
 
   lifecycle {
     ignore_changes = [source_content] #this is a cache file, we don't want to update it when the content changes
   }
 }
-
-
