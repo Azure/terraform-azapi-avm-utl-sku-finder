@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.115, < 5.0"
+      version = ">= 3.115, < 5.1"
     }
     http = {
       source  = "hashicorp/http"
@@ -34,7 +34,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.12.0"
 
   availability_zones_filter = true
 }
@@ -46,7 +46,7 @@ resource "random_integer" "zone_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.0"
+  version = "0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -76,7 +76,7 @@ data "azurerm_client_config" "current" {}
 
 module "this_storage_account" {
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
-  version = "0.2.9"
+  version = "0.7.4"
 
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
@@ -152,7 +152,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.115, < 5.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.115, < 5.1)
 
 - <a name="requirement_http"></a> [http](#requirement\_http) (~> 3.4)
 
@@ -206,19 +206,19 @@ The following Modules are called:
 
 Source: Azure/naming/azurerm
 
-Version: 0.4.0
+Version: 0.4.3
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.3.0
+Version: 0.12.0
 
 ### <a name="module_this_storage_account"></a> [this\_storage\_account](#module\_this\_storage\_account)
 
 Source: Azure/avm-res-storage-storageaccount/azurerm
 
-Version: 0.2.9
+Version: 0.7.4
 
 ### <a name="module_vm_skus"></a> [vm\_skus](#module\_vm\_skus)
 
