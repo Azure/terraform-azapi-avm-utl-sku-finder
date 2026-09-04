@@ -57,13 +57,13 @@ resource "azurerm_resource_group" "this" {
 # Get current IP address for use in storage firewall rules
 data "http" "ip" {
   url = "https://api.ipify.org/"
+
   retry {
     attempts     = 5
     max_delay_ms = 1000
     min_delay_ms = 500
   }
 }
-
 
 # This is a workaround for the limitation of the storage account firewall rules that require a /30 CIDR block
 # Do not do this in production, this is just for the sake of the example
@@ -115,7 +115,6 @@ module "this_storage_account" {
   shared_access_key_enabled = true
 }
 
-
 module "vm_skus" {
   source = "../.."
 
@@ -141,8 +140,6 @@ module "vm_skus" {
 
   depends_on = [random_integer.zone_index]
 }
-
-
 ```
 
 <!-- markdownlint-disable MD033 -->
