@@ -60,8 +60,6 @@ module "vm_skus" {
 
   depends_on = [random_integer.zone_index]
 }
-
-
 ```
 
 <!-- markdownlint-disable MD033 -->
