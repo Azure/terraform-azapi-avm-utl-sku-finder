@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.115, < 5.0"
+      version = ">= 3.115, < 5.1"
     }
     random = {
       source  = "hashicorp/random"
@@ -30,7 +30,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.12.0"
 
   availability_zones_filter = true
 }
@@ -69,7 +69,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.9)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.115, < 5.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.115, < 5.1)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
@@ -118,7 +118,7 @@ The following Modules are called:
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.3.0
+Version: 0.12.0
 
 ### <a name="module_vm_skus"></a> [vm\_skus](#module\_vm\_skus)
 
