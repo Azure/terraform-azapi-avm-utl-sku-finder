@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "AVM SKU Finder ",
+  "moduleDescription": "This AVM utility module finds sku's that match a set of filter conditions",
+  "canonicalType": "sku-finder",
+  "owners": [
+    "jchancellor-ms"
+  ]
+}
