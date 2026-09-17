@@ -26,6 +26,7 @@ module "regions" {
   version = "0.3.0"
 
   availability_zones_filter = true
+  enable_telemetry          = false
 }
 
 resource "random_integer" "zone_index" {
@@ -37,7 +38,7 @@ module "vm_skus" {
   source = "../.."
 
   location         = "canadacentral"
-  enable_telemetry = var.enable_telemetry
+  enable_telemetry = false
   resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true

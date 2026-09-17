@@ -30,6 +30,7 @@ module "regions" {
   version = "0.3.0"
 
   availability_zones_filter = true
+  enable_telemetry          = false
 }
 
 resource "random_integer" "zone_index" {
@@ -85,6 +86,7 @@ module "this_storage_account" {
       name = "cache-container"
     }
   }
+  enable_telemetry           = false
   https_traffic_only_enabled = true
   min_tls_version            = "TLS1_2"
   network_rules = {
@@ -119,7 +121,7 @@ module "vm_skus" {
     storage_account_blob_container_name = split("/", module.this_storage_account.containers["sku_cache_container"].id)[(length(split("/", module.this_storage_account.containers["sku_cache_container"].id))) - 1]
     storage_account_blob_prefix         = "remote-stg"
   }
-  enable_telemetry = var.enable_telemetry
+  enable_telemetry = false
   resource_type    = "vm"
   vm_filters = {
     accelerated_networking_enabled = true

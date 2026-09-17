@@ -26,6 +26,7 @@ module "regions" {
   version = "0.3.0"
 
   availability_zones_filter = true
+  enable_telemetry          = false
 }
 
 resource "random_integer" "zone_index" {
@@ -38,7 +39,7 @@ module "vm_skus" {
 
   location           = "canadacentral"
   cache_results      = true
-  enable_telemetry   = var.enable_telemetry
+  enable_telemetry   = false
   local_cache_prefix = "example"
   resource_type      = "vm"
   vm_filters = {
