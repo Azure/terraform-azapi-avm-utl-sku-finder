@@ -29,8 +29,8 @@ module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
   version = "0.12.0"
 
-  availability_zones_filter = true
   enable_telemetry          = var.enable_telemetry
+  availability_zones_filter = true
 }
 
 resource "random_integer" "zone_index" {
@@ -74,7 +74,6 @@ module "this_storage_account" {
 
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
   account_kind             = "StorageV2"
   account_replication_type = "ZRS"
   account_tier             = "Standard"
@@ -108,6 +107,7 @@ module "this_storage_account" {
     },
   }
   shared_access_key_enabled = true
+  resource_group_name       = azurerm_resource_group.this.name
 }
 
 module "vm_skus" {
