@@ -5,5 +5,8 @@
   "canonicalType": "sku-finder",
   "owners": [
     "jchancellor-ms"
+  ],
+  "alternativeNames": [
+    "Sku"
   ]
 }
