@@ -34,10 +34,10 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.12.0"
 
-  availability_zones_filter = true
   enable_telemetry          = var.enable_telemetry
+  availability_zones_filter = true
 }
 
 resource "random_integer" "zone_index" {
@@ -47,7 +47,7 @@ resource "random_integer" "zone_index" {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.0"
+  version = "0.4.3"
 }
 
 resource "azurerm_resource_group" "this" {
@@ -77,11 +77,10 @@ data "azurerm_client_config" "current" {}
 
 module "this_storage_account" {
   source  = "Azure/avm-res-storage-storageaccount/azurerm"
-  version = "0.2.9"
+  version = "0.10.0"
 
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
   account_kind             = "StorageV2"
   account_replication_type = "ZRS"
   account_tier             = "Standard"
@@ -115,6 +114,7 @@ module "this_storage_account" {
     },
   }
   shared_access_key_enabled = true
+  resource_group_name       = azurerm_resource_group.this.name
 }
 
 module "vm_skus" {
@@ -205,19 +205,19 @@ The following Modules are called:
 
 Source: Azure/naming/azurerm
 
-Version: 0.4.0
+Version: 0.4.3
 
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.3.0
+Version: 0.12.0
 
 ### <a name="module_this_storage_account"></a> [this\_storage\_account](#module\_this\_storage\_account)
 
 Source: Azure/avm-res-storage-storageaccount/azurerm
 
-Version: 0.2.9
+Version: 0.10.0
 
 ### <a name="module_vm_skus"></a> [vm\_skus](#module\_vm\_skus)
 
