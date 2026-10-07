@@ -10,26 +10,6 @@ variable "cache_results" {
   description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
 }
 
-#TODO: create a full description of the cache_storage_details object
-variable "cache_storage_details" {
-  type = object({
-    storage_account_resource_group_name = string
-    storage_account_name                = string
-    storage_account_blob_container_name = string
-    storage_account_blob_prefix         = string
-  })
-  default     = null
-  description = <<DESCRIPTION
-This object is used to define the storage account and container where the cache file will be stored.
-
-- `storage_account_resource_group_name` - The name of the resource group where the storage account is located.
-- `storage_account_name` - The name of the storage account where the cache file will be stored.
-- `storage_account_blob_container_name` - The name of the container where the cache file will be stored.
-- `storage_account_blob_prefix` - The prefix to be used for the cache file blob.
-
-DESCRIPTION
-}
-
 variable "enable_telemetry" {
   type        = bool
   default     = true
