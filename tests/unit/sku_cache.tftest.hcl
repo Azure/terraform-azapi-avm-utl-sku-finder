@@ -1,4 +1,10 @@
 mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+
   mock_data "azapi_resource_list" {
     defaults = {
       output = {
@@ -29,16 +35,6 @@ mock_provider "azapi" {
           },
         ]
       }
-    }
-  }
-}
-
-# The module still declares azurerm for data.azurerm_subscription.current, which is
-# replaced by data.azapi_client_config.current when the module migrates to AzAPI.
-mock_provider "azurerm" {
-  mock_data "azurerm_subscription" {
-    defaults = {
-      id = "/subscriptions/00000000-0000-0000-0000-000000000000"
     }
   }
 }
