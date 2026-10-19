@@ -2,6 +2,10 @@ terraform {
   required_version = "~> 1.9"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.6"
@@ -16,9 +20,13 @@ locals {
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
   version = "0.13.0"
+  providers = {
+    azapi = azapi
+  }
 
-  availability_zones_filter = true
+  location                  = var.location
   enable_telemetry          = var.enable_telemetry
+  availability_zones_filter = true
 }
 
 resource "random_integer" "zone_index" {
