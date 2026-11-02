@@ -17,8 +17,9 @@ module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
   version = "0.13.2"
 
-  availability_zones_filter = true
+  location                  = var.location
   enable_telemetry          = var.enable_telemetry
+  availability_zones_filter = true
 }
 
 resource "random_integer" "zone_index" {
