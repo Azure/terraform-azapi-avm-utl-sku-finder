@@ -10,6 +10,7 @@ variable "cache_results" {
   description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
 }
 
+# tflint-ignore: terraform_unused_declarations # Retained for existing callers.
 variable "enable_telemetry" {
   type        = bool
   default     = true
