@@ -15,10 +15,12 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.3.0"
+  version = "0.13.2"
 
-  availability_zones_filter = true
-  enable_telemetry          = var.enable_telemetry
+  location               = local.deployment_region
+  enable_telemetry       = var.enable_telemetry
+  has_availability_zones = true
+  is_recommended         = true
 }
 
 resource "random_integer" "zone_index" {
