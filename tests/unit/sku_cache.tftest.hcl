@@ -41,8 +41,6 @@ mock_provider "azapi" {
 
 mock_provider "local" {}
 
-mock_provider "modtm" {}
-
 mock_provider "random" {
   # Pin the selection so the asserted sku is deterministic rather than a random index.
   mock_resource "random_integer" {
@@ -60,7 +58,8 @@ run "returns_the_matching_sku_when_caching_is_disabled" {
   command = apply
 
   variables {
-    cache_results = false
+    cache_results    = false
+    enable_telemetry = true
   }
 
   assert {
@@ -74,11 +73,26 @@ run "returns_the_matching_sku_when_caching_is_disabled" {
   }
 }
 
+run "telemetry_input_does_not_change_results" {
+  command = apply
+
+  variables {
+    cache_results    = false
+    enable_telemetry = false
+  }
+
+  assert {
+    condition     = output.sku == run.returns_the_matching_sku_when_caching_is_disabled.sku && output.sku_list == run.returns_the_matching_sku_when_caching_is_disabled.sku_list
+    error_message = "The compatibility telemetry input must not affect SKU results."
+  }
+}
+
 run "returns_the_matching_sku_from_the_local_cache_file" {
   command = apply
 
   variables {
-    cache_results = true
+    cache_results    = true
+    enable_telemetry = false
   }
 
   assert {

@@ -10,6 +10,8 @@ Because available sku's can vary from day to day for some subscriptions, the mod
 
 >Note: If you are using a zone value that is only known after apply, then ensure that you set a depends on block for the resource generating the zone. This is to handle an error where the sku map doesn't form properly due to the inability to determine the zone type. See the examples for a demonstration of this.
 
+The module no longer collects telemetry. The `enable_telemetry` input remains for compatibility and has no effect on this module. Existing state entries for the former telemetry resources are forgotten without being destroyed; upgrading an existing deployment may require the previous providers for the first initialization.
+
 ## Upgrading to v0.4.0
 
 v0.4.0 removes the storage account blob cache. The `cache_storage_details` input no longer exists, and the module no longer requires the `azurerm` provider for it.
@@ -17,4 +19,3 @@ v0.4.0 removes the storage account blob cache. The `cache_storage_details` input
 If you did not set `cache_storage_details`, no action is required.
 
 If you did set it, remove the input before upgrading. On the next apply Terraform destroys the cache blob and, where `cache_results` is still `true`, writes a local cache file instead. The previously pinned sku is **not** carried across, so the module selects a new sku and any resource consuming that output may be replaced. To keep the existing sku, read it from the current cache blob first and pass that value directly to the consuming resource instead of the module output.
-
