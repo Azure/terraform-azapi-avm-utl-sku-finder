@@ -10,13 +10,12 @@ variable "cache_results" {
   description = "Do you want to write the single random sku output to a cache file? This is to ensure idempotency when re-running the module as sku criteria change over time."
 }
 
+# tflint-ignore: terraform_unused_declarations # Retained for existing callers.
 variable "enable_telemetry" {
   type        = bool
   default     = true
   description = <<DESCRIPTION
-This variable controls whether or not telemetry is enabled for the module.
-For more information see <https://aka.ms/avm/telemetryinfo>.
-If it is set to false, then no telemetry will be collected.
+Retained for compatibility. This utility module does not collect telemetry.
 DESCRIPTION
   nullable    = false
 }

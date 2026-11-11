@@ -12,6 +12,8 @@ Because available sku's can vary from day to day for some subscriptions, the mod
 
 >Note: If you are using a zone value that is only known after apply, then ensure that you set a depends on block for the resource generating the zone. This is to handle an error where the sku map doesn't form properly due to the inability to determine the zone type. See the examples for a demonstration of this.
 
+The module no longer collects telemetry. The `enable_telemetry` input remains for compatibility and has no effect on this module. Existing state entries for the former telemetry resources are forgotten without being destroyed; upgrading an existing deployment may require the previous providers for the first initialization.
+
 ## Upgrading to v0.4.0
 
 v0.4.0 removes the storage account blob cache. The `cache_storage_details` input no longer exists, and the module no longer requires the `azurerm` provider for it.
@@ -31,8 +33,6 @@ The following requirements are needed by this module:
 
 - <a name="requirement_local"></a> [local](#requirement\_local) (~> 2.5)
 
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
 ## Resources
@@ -40,14 +40,10 @@ The following requirements are needed by this module:
 The following resources are used by this module:
 
 - [local_file.local_sku_cache](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) (resource)
-- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_integer.vm_deploy_sku](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
 - [random_string.name_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
-- [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azapi_client_config.current](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
-- [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
 - [azapi_resource_list.vm](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
-- [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -74,9 +70,7 @@ Default: `false`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
-Description: This variable controls whether or not telemetry is enabled for the module.  
-For more information see <https://aka.ms/avm/telemetryinfo>.  
-If it is set to false, then no telemetry will be collected.
+Description: Retained for compatibility. This utility module does not collect telemetry.
 
 Type: `bool`
 
