@@ -22,7 +22,7 @@ locals {
 
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.13.2"
+  version = "0.15.0"
 
   location               = local.deployment_region
   enable_telemetry       = var.enable_telemetry
@@ -109,7 +109,7 @@ The following Modules are called:
 
 Source: Azure/avm-utl-regions/azurerm
 
-Version: 0.13.2
+Version: 0.15.0
 
 ### <a name="module_vm_skus"></a> [vm\_skus](#module\_vm\_skus)
 
